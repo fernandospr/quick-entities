@@ -9,17 +9,17 @@ else
   DB = Mongo::Connection.new.db("fufodb")
 end
 
-get '/entities' do
+get '/:entities' do |entities|
   content_type :json
 
-  coll = DB.collection('entities')
+  coll = DB.collection(entities)
   coll.find( {}, { fields: {_id:0} } ).to_a.to_json
 end
 
-post '/entities' do
+post '/:entities' do |entities|
   content_type :json
 
-  coll = DB.collection('entities')
+  coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
 
   if !json['id']
@@ -35,10 +35,10 @@ post '/entities' do
   end
 end
 
-get '/entities/:id' do |id|
+get '/:entities/:id' do |entities,id|
   content_type :json
 
-  coll = DB.collection('entities')
+  coll = DB.collection(entities)
   entity = find_by_id(coll, id)
   if entity
   	entity.to_json
@@ -47,10 +47,10 @@ get '/entities/:id' do |id|
   end
 end
 
-delete '/entities/:id' do |id|
+delete '/:entities/:id' do |entities,id|
   content_type :json
 
-  coll = DB.collection('entities')
+  coll = DB.collection(entities)
   entity = find_by_id(coll, id)
   if entity
 	coll.remove({'id' => id})
