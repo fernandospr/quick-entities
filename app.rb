@@ -17,8 +17,28 @@ get '/entities' do
 end
 
 post '/entities' do
+  content_type :json
+
   coll = DB.collection('entities')
   json = JSON.parse(request.body.read)
   coll.save(json)
+
+  halt 204
 end
+
+get '/entities/:id' do |id|
+  content_type :json
+
+  coll = DB.collection('entities')
+  coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0].to_json
+end
+
+delete '/entities/:id' do |id|
+  coll = DB.collection('entities')
+  entity = coll.remove({'id' => id})
+
+  halt 204
+end
+
+
 
