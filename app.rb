@@ -21,16 +21,25 @@ post '/entities' do
 
   coll = DB.collection('entities')
   json = JSON.parse(request.body.read)
-  coll.save(json)
 
-  halt 204
+  if !json['id']
+  	halt 400, { :errors => "id required" }.to_json
+  end
+
+  entity = find_by_id(coll, json['id'])
+  if !entity
+  	coll.save(json)
+  	halt 204
+  else
+  	halt 400, { :errors => "id already exists" }.to_json
+  end
 end
 
 get '/entities/:id' do |id|
   content_type :json
 
   coll = DB.collection('entities')
-  entity = coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0]
+  entity = find_by_id(coll, id)
   if entity
   	entity.to_json
   else
@@ -40,13 +49,17 @@ end
 
 delete '/entities/:id' do |id|
   content_type :json
-  
+
   coll = DB.collection('entities')
-  entity = coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0]
+  entity = find_by_id(coll, id)
   if entity
 	coll.remove({'id' => id})
   	halt 204
   else
   	halt 404
   end
+end
+
+def find_by_id (coll, id)
+  coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0]
 end
