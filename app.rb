@@ -1,7 +1,5 @@
-require 'rubygems'
-require 'sinatra'
-require 'mongo'
-require 'json'
+require 'bundler'
+Bundler.require
 
 if ENV['MONGOHQ_URL']
   uri = URI.parse(ENV['MONGOHQ_URL'])
