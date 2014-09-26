@@ -30,15 +30,23 @@ get '/entities/:id' do |id|
   content_type :json
 
   coll = DB.collection('entities')
-  coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0].to_json
+  entity = coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0]
+  if entity
+  	entity.to_json
+  else
+  	halt 404
+  end
 end
 
 delete '/entities/:id' do |id|
+  content_type :json
+  
   coll = DB.collection('entities')
-  entity = coll.remove({'id' => id})
-
-  halt 204
+  entity = coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0]
+  if entity
+	coll.remove({'id' => id})
+  	halt 204
+  else
+  	halt 404
+  end
 end
-
-
-
