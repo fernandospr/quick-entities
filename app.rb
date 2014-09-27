@@ -28,42 +28,55 @@ post '/:entities' do |entities|
   coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
 
-  if !json['id']
-  	halt 400, { :errors => "id required" }.to_json
-  end
-
-  entity = find_by_id(coll, json['id'])
-  if !entity
-  	coll.save(json)
-  	halt 204
-  else
-  	halt 400, { :errors => "id already exists" }.to_json
-  end
+  halt_if_id_is_missing(json)
+  halt_if_exists(coll, json['id'])
+  
+  create_entity(coll, json)
+  halt 204 
 end
 
 get '/:entities/:id' do |entities,id|
   content_type :json
 
   coll = DB.collection(entities)
-  entity = find_by_id(coll, id)
-  if entity
-  	entity.to_json
-  else
-  	halt 404
-  end
+  entity = find_by_id_or_halt(coll, id)
+
+  entity.to_json
 end
 
 delete '/:entities/:id' do |entities,id|
   content_type :json
 
   coll = DB.collection(entities)
-  entity = find_by_id(coll, id)
-  if entity
+  find_by_id_or_halt(coll, id)
+
 	coll.remove({'id' => id})
-  	halt 204
-  else
-  	halt 404
+  halt 204
+end
+
+def create_entity (coll,json)
+  json['id'] = json['id'].to_s
+  coll.save(json)
+end
+
+def halt_if_id_is_missing (json)
+  if !json['id']
+    halt 400, { :errors => "id required" }.to_json
   end
+end
+
+def halt_if_exists (coll, id)
+  if find_by_id(coll,id)
+    halt 400, { :errors => "id already exists" }.to_json
+  end
+end
+
+def find_by_id_or_halt (coll, id)
+  entity = find_by_id(coll, id)
+  if !entity
+    halt 404
+  end
+  entity
 end
 
 def find_by_id (coll, id)
