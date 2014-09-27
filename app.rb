@@ -61,13 +61,13 @@ end
 
 def halt_if_id_is_missing (json)
   if !json['id']
-    halt 400, { :errors => "id required" }.to_json
+    halt 400, { :id => "id_required", :message => "The id is required" }.to_json
   end
 end
 
 def halt_if_exists (coll, id)
   if find_by_id(coll,id)
-    halt 400, { :errors => "id already exists" }.to_json
+    halt 400, { :id => "id_already_exists", :message => "An entity with id " + id.to_s + " already exists" }.to_json
   end
 end
 
@@ -80,5 +80,5 @@ def find_by_id_or_halt (coll, id)
 end
 
 def find_by_id (coll, id)
-  coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0]
+  coll.find( {'id' => id.to_s}, { fields: {_id:0} } ).to_a[0]
 end
