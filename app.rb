@@ -9,6 +9,12 @@ else
   DB = Mongo::Connection.new.db("fufodb")
 end
 
+get '/' do 
+  content_type :json
+
+  DB.collection_names.to_a.to_json
+end
+
 get '/:entities' do |entities|
   content_type :json
 
@@ -59,6 +65,8 @@ delete '/:entities/:id' do |entities,id|
   	halt 404
   end
 end
+
+def 
 
 def find_by_id (coll, id)
   coll.find( {'id' => id}, { fields: {_id:0} } ).to_a[0]
