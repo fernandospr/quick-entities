@@ -9,7 +9,7 @@ else
   DB = Mongo::Connection.new.db("fufodb")
 end
 
-get '/' do 
+get '/entities' do 
   content_type :json
 
   DB.collection_names.to_a.to_json
