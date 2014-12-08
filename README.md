@@ -9,7 +9,6 @@ It exposes REST services and saves the entities in a Mongo database.
 
 A working example is deployed on Heroku: http://quick-entities.herokuapp.com/.
 
-
 ## Quick Setup
 
 * Install Ruby, Sinatra and Mongo.
@@ -18,6 +17,7 @@ A working example is deployed on Heroku: http://quick-entities.herokuapp.com/.
 
 * Run the application: 
 ```
+$ bundle install
 $ ruby app.rb
 ```
 
