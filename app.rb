@@ -35,6 +35,20 @@ post '/:entities' do |entities|
   halt 204 
 end
 
+put '/:entities/:id' do |entities,id|
+  content_type :json
+
+  coll = DB.collection(entities)
+  json = JSON.parse(request.body.read)
+
+  find_by_id_or_halt(coll, id)
+
+  coll.remove({'id' => id})
+
+  create_entity(coll, json)
+  halt 204 
+end
+
 get '/:entities/:id' do |entities,id|
   content_type :json
 

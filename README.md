@@ -5,6 +5,10 @@ quick-entities
 
 Quick-Entities is a simple implementation of services to create, read, update and delete any kind of entity.
 
+It exposes REST services and saves the entities in a Mongo database.
+
+A working example is deployed on Heroku: http://quick-entities.herokuapp.com/.
+
 
 ## Quick Setup
 
@@ -39,7 +43,13 @@ Execute a GET request to http://localhost:4567/fruits/1
 
 ###Update an entity
 
-Not yet implemented!
+Execute a PUT request to http://localhost:4567/fruits with the following JSON body:
+```
+{
+	"id":1,
+	"name": "Orange"
+}
+```
 
 ###Delete the entity
 

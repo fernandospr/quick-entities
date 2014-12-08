@@ -90,4 +90,21 @@ class AppTest < Test::Unit::TestCase
     assert_equal 204, last_response.status
   end
 
+  def test_10_update_entity
+    post '/tests', {:id => 3, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_equal 204, last_response.status
+    
+    put '/tests/3', {:id => 3, :test => "updated-test"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_equal 204, last_response.status
+
+    get '/tests/3'
+    assert_equal 200, last_response.status
+    json = JSON.parse(last_response.body)
+    assert_equal "3", json['id']
+    assert_equal "updated-test", json['test']
+
+    delete '/tests/3'
+    assert_equal 204, last_response.status
+  end
+
 end
