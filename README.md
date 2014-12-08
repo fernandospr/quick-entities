@@ -16,6 +16,7 @@ It exposes REST services and saves the entities in a Mongo database.
 
 * Run the application: 
 ```
+$ bundle install
 $ ruby app.rb
 ```
 
