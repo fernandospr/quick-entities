@@ -5,6 +5,8 @@ quick-entities
 
 Quick-Entities is a simple implementation of services to create, read, update and delete any kind of entity.
 
+It exposes REST services and saves the entities in a Mongo database.
+
 
 ## Quick Setup
 
