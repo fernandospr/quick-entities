@@ -6,7 +6,7 @@ if ENV['MONGOHQ_URL']
   conn = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
   DB = conn.db(uri.path.gsub(/^\//, ''))
 else
-  DB = Mongo::Connection.new.db("fufodb")
+  DB = Mongo::Connection.new.db("test")
 end
 
 get '/' do 
