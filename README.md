@@ -11,7 +11,7 @@ A working example is deployed on Heroku: http://quick-entities.herokuapp.com/.
 
 ## Quick Setup
 
-* Install Ruby, Sinatra and Mongo.
+* Install <a href="https://www.ruby-lang.org/en/documentation/installation/">Ruby</a>, <a href="http://www.sinatrarb.com/">Sinatra</a> and <a href="http://docs.mongodb.org/manual/installation/">Mongo</a>.
 
 * Start mongo.
 
