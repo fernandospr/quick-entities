@@ -65,6 +65,11 @@ delete '/:entities/:id' do |entities,id|
   find_by_id_or_halt(coll, id)
 
 	coll.remove({'id' => id})
+
+  if (coll.count == 0)
+    coll.drop
+  end
+
   halt 204
 end
 
