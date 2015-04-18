@@ -25,6 +25,8 @@ end
 post '/:entities' do |entities|
   content_type :json
 
+  halt_if_invalid_entities_name(entities)
+
   coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
 
@@ -100,4 +102,10 @@ end
 
 def find_by_id (coll, id)
   coll.find( {'id' => id.to_s}, { fields: {_id:0} } ).to_a[0]
+end
+
+def halt_if_invalid_entities_name(entities)
+  if entities.strip.start_with?("system.")
+    halt 400, { :id => "invalid_entities_name", :message => "Cannot create entities with the name " + entities }.to_json
+  end
 end

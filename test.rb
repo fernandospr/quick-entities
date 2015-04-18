@@ -107,4 +107,9 @@ class AppTest < Test::Unit::TestCase
     assert_equal 204, last_response.status
   end
 
+  def test_11_create_entity_with_invalid_entities_name
+    post '/system.test', {:id => 3, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_equal 400, last_response.status
+  end
+
 end
