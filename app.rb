@@ -12,7 +12,9 @@ end
 get '/' do 
   content_type :json
 
-  DB.collection_names.to_a.to_json
+  collection_names = DB.collection_names.to_a
+  delete_db_collection_names(collection_names)
+  collection_names.to_json
 end
 
 get '/:entities' do |entities|
@@ -105,7 +107,15 @@ def find_by_id (coll, id)
 end
 
 def halt_if_invalid_entities_name(entities)
-  if entities.strip.start_with?("system.")
+  if is_db_collection_name(entities)
     halt 400, { :id => "invalid_entities_name", :message => "Cannot create entities with the name " + entities }.to_json
   end
+end
+
+def delete_db_collection_names(collection_names)
+  collection_names.delete_if{ |collection_name| is_db_collection_name(collection_name) }
+end
+
+def is_db_collection_name(collection_name)
+  collection_name.strip.start_with?("system.")
 end

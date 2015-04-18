@@ -112,4 +112,12 @@ class AppTest < Test::Unit::TestCase
     assert_equal 400, last_response.status
   end
 
+  def test_12_no_collections
+    get '/'
+ 
+    assert_equal 200, last_response.status
+    json = JSON.parse(last_response.body)
+    assert json.empty?, "User collections should be empty"
+  end
+
 end
