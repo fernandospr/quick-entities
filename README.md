@@ -11,9 +11,9 @@ A working example is deployed on Heroku: http://quick-entities.herokuapp.com/.
 
 ## Quick Setup
 
-* Install <a href="https://www.ruby-lang.org/en/documentation/installation/">Ruby</a>, <a href="http://www.sinatrarb.com/">Sinatra</a> and <a href="http://docs.mongodb.org/manual/installation/">Mongo</a>.
+* Install <a href="https://www.ruby-lang.org/en/documentation/installation/">Ruby</a>, <a href="http://www.sinatrarb.com/">Sinatra</a> and <a href="http://docs.mongodb.org/manual/installation/">MongoDB</a>.
 
-* Start mongo.
+* <a href="http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/#run-mongodb">Run MongoDB</a>.
 
 * Run the application: 
 ```
