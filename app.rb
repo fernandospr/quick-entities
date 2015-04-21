@@ -47,6 +47,10 @@ put '/:entities/:id' do |entities,id|
 
   find_by_id_or_halt(coll, id)
 
+  if (id.to_s != json['id'].to_s)
+    halt_if_exists(coll, json['id'].to_s)
+  end
+
   coll.remove({'id' => id})
 
   create_entity(coll, json)
