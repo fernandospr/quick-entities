@@ -47,13 +47,28 @@ put '/:entities/:id' do |entities,id|
 
   find_by_id_or_halt(coll, id)
 
-  if (id.to_s != json['id'].to_s)
-    halt_if_exists(coll, json['id'].to_s)
-  end
+  halt_if_trying_to_update_to_a_new_id_that_exists(coll, id, json['id'])
 
   coll.remove({'id' => id})
 
   create_entity(coll, json)
+  halt 204 
+end
+
+patch '/:entities/:id' do |entities,id|
+  content_type :json
+
+  coll = DB.collection(entities)
+  json = JSON.parse(request.body.read)
+
+  find_by_id_or_halt(coll, id)
+
+  if (json['id'] && id.to_s != json['id'].to_s)
+    halt_if_exists(coll, json['id'].to_s)
+  end
+
+  coll.update({'id' => id.to_s}, '$set' => json)
+
   halt 204 
 end
 
@@ -95,6 +110,12 @@ end
 def halt_if_exists (coll, id)
   if find_by_id(coll,id)
     halt 400, { :id => "id_already_exists", :message => "An entity with id " + id.to_s + " already exists" }.to_json
+  end
+end
+
+def halt_if_trying_to_update_to_a_new_id_that_exists (coll, current_id, new_id)
+  if (new_id && current_id.to_s != new_id.to_s)
+    halt_if_exists(coll, new_id.to_s)
   end
 end
 
