@@ -107,17 +107,34 @@ class AppTest < Test::Unit::TestCase
     assert_equal 204, last_response.status
   end
 
-  def test_11_create_entity_with_invalid_entities_name
+  def test_11_update_entity_with_id_of_existing_entity
+    post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_equal 204, last_response.status
+    
+    post '/tests', {:id => 2, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_equal 204, last_response.status
+
+    put '/tests/2', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_equal 400, last_response.status
+
+    delete '/tests/1'
+    assert_equal 204, last_response.status
+
+    delete '/tests/2'
+    assert_equal 204, last_response.status
+  end
+
+  def test_12_create_entity_with_invalid_entities_name
     post '/system.test', {:id => 3, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     assert_equal 400, last_response.status
   end
 
-  def test_12_no_collections
+  def test_13_no_internal_collections
     get '/'
  
     assert_equal 200, last_response.status
     json = JSON.parse(last_response.body)
-    assert json.empty?, "User collections should be empty"
+    assert !json.any? {|collection| collection.strip.start_with?("system.")}, "Should not return internal collections"
   end
 
 end
