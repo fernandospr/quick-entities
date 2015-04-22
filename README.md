@@ -43,7 +43,7 @@ Execute a GET request to http://localhost:4567/fruits/1
 
 ###Update an entity
 
-Execute a PUT request to http://localhost:4567/fruits with the following JSON body:
+Execute a PUT request to http://localhost:4567/fruits/1 with the following JSON body:
 ```
 {
 	"id":1,
