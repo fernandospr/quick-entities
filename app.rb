@@ -50,8 +50,8 @@ put '/:entities/:id' do |entities,id|
   halt_if_trying_to_update_to_a_new_id_that_exists(coll, id, json['id'])
 
   coll.remove({'id' => id})
-
   create_entity(coll, json)
+  
   halt 204 
 end
 
@@ -63,9 +63,7 @@ patch '/:entities/:id' do |entities,id|
 
   find_by_id_or_halt(coll, id)
 
-  if (json['id'] && id.to_s != json['id'].to_s)
-    halt_if_exists(coll, json['id'].to_s)
-  end
+  halt_if_trying_to_update_to_a_new_id_that_exists(coll, id, json['id'])
 
   coll.update({'id' => id.to_s}, '$set' => json)
 
@@ -89,14 +87,12 @@ delete '/:entities/:id' do |entities,id|
 
 	coll.remove({'id' => id})
 
-  if (coll.count == 0)
-    coll.drop
-  end
+  drop_collection_if_empty(coll)
 
   halt 204
 end
 
-def create_entity (coll,json)
+def create_entity (coll, json)
   json['id'] = json['id'].to_s
   coll.save(json)
 end
@@ -131,16 +127,22 @@ def find_by_id (coll, id)
   coll.find( {'id' => id.to_s}, { fields: {_id:0} } ).to_a[0]
 end
 
-def halt_if_invalid_entities_name(entities)
+def drop_collection_if_empty (coll)
+  if (coll.count == 0)
+    coll.drop
+  end
+end
+
+def halt_if_invalid_entities_name (entities)
   if is_db_collection_name(entities)
     halt 400, { :id => "invalid_entities_name", :message => "Cannot create entities with the name " + entities }.to_json
   end
 end
 
-def delete_db_collection_names(collection_names)
+def delete_db_collection_names (collection_names)
   collection_names.delete_if{ |collection_name| is_db_collection_name(collection_name) }
 end
 
-def is_db_collection_name(collection_name)
+def is_db_collection_name (collection_name)
   collection_name.strip.start_with?("system.")
 end

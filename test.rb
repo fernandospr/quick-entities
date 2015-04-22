@@ -137,4 +137,30 @@ class AppTest < Test::Unit::TestCase
     assert !json.any? {|collection| collection.strip.start_with?("system.")}, "Should not return internal collections"
   end
 
+  def test_14_patch_entity
+    post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+
+    patch 'tests/1', {:name => "test-name"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_equal 204, last_response.status
+
+    get '/tests/1'
+    json = JSON.parse(last_response.body)
+    assert_equal "1", json['id']
+    assert_equal "test", json['test']
+    assert_equal "test-name", json['name']
+
+    delete '/tests/1'
+  end
+
+  def test_15_patch_entity_with_id_of_existing_entity
+    post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+    post '/tests', {:id => 2, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
+    
+    patch 'tests/1', {:id => 2, :name => "test-name"}.to_json, "CONTENT-TYPE" => "application/json"
+    assert_bad_request_already_exists(last_response)
+
+    delete '/tests/1'
+    delete '/tests/2'
+  end
+
 end
