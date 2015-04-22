@@ -51,6 +51,15 @@ Execute a PUT request to http://localhost:4567/fruits with the following JSON bo
 }
 ```
 
+###Patch an entity
+
+Execute a PATCH request to http://localhost:4567/fruits/1 with the following JSON body:
+```
+{
+	"quantity": 10
+}
+```
+
 ###Delete the entity
 
 Execute a DELETE request to http://localhost:4567/fruits/1
