@@ -18,7 +18,7 @@ A working example is deployed on Heroku: http://quick-entities.herokuapp.com/.
 * Run the application: 
 ```
 $ bundle install
-$ ruby app.rb
+$ ruby app.rb (or ruby app.rb -o 0.0.0.0 if you need to allow access from the network)
 ```
 
 ## Usage
