@@ -28,10 +28,12 @@ $ ruby app.rb (or ruby app.rb -o 0.0.0.0 if you need to allow access from the ne
 Execute a POST request to http://localhost:4567/fruits with the following JSON body:
 ```
 {
-	"id":1,
+	"id":"1",
 	"name": "Apple"
 }
 ```
+
+Note: if you do not provide the id, an id will be generated for you.
 
 ###Get the entities
 
@@ -46,7 +48,7 @@ Execute a GET request to http://localhost:4567/fruits/1
 Execute a PUT request to http://localhost:4567/fruits/1 with the following JSON body:
 ```
 {
-	"id":1,
+	"id":"1",
 	"name": "Orange"
 }
 ```
