@@ -18,7 +18,7 @@ A working example is deployed on Heroku: http://quick-entities.herokuapp.com/.
 * Run the application: 
 ```
 $ bundle install
-$ ruby app.rb
+$ ruby app.rb (or ruby app.rb -o 0.0.0.0 if you need to allow access from the network)
 ```
 
 ## Usage
@@ -43,7 +43,7 @@ Execute a GET request to http://localhost:4567/fruits/1
 
 ###Update an entity
 
-Execute a PUT request to http://localhost:4567/fruits with the following JSON body:
+Execute a PUT request to http://localhost:4567/fruits/1 with the following JSON body:
 ```
 {
 	"id":1,
