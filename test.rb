@@ -14,7 +14,7 @@ class AppTest < Test::Unit::TestCase
   def test_00_create_entity
   	post '/tests', {:id => "1", :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
   	
-  	assert_equal 204, last_response.status
+  	assert_equal 200, last_response.status
   end
 
   def test_01_create_already_existing_entity
@@ -29,18 +29,14 @@ class AppTest < Test::Unit::TestCase
     assert_bad_request_already_exists(last_response)
   end
 
-  def assert_bad_request_already_exists (last_response)
-    assert_equal 400, last_response.status
-    json = JSON.parse(last_response.body)
-    assert_equal "id_already_exists", json['id']
-  end
-
   def test_03_create_entity_without_id
   	post '/tests', {:test => "test"}.to_json, "CONTENT_TYPE" => "application/json"
   	
-  	assert_equal 400, last_response.status
+  	assert_equal 200, last_response.status
     json = JSON.parse(last_response.body)
-    assert_equal "id_required", json['id']
+    assert_not_nil json['id']
+
+    delete '/tests/' + json['id']
   end
 
   def test_04_get_existing_entity
@@ -79,7 +75,7 @@ class AppTest < Test::Unit::TestCase
 
   def test_09_create_entity_using_number_id
     post '/tests', {:id => 2, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
-    assert_equal 204, last_response.status
+    assert_equal 200, last_response.status
 
     get '/tests/2'
     assert_equal 200, last_response.status
@@ -92,10 +88,10 @@ class AppTest < Test::Unit::TestCase
 
   def test_10_update_entity
     post '/tests', {:id => 3, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
-    assert_equal 204, last_response.status
+    assert_equal 200, last_response.status
     
     put '/tests/3', {:id => 3, :test => "updated-test"}.to_json, "CONTENT-TYPE" => "application/json"
-    assert_equal 204, last_response.status
+    assert_equal 200, last_response.status
 
     get '/tests/3'
     assert_equal 200, last_response.status
@@ -109,10 +105,10 @@ class AppTest < Test::Unit::TestCase
 
   def test_11_update_entity_with_id_of_existing_entity
     post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
-    assert_equal 204, last_response.status
+    assert_equal 200, last_response.status
     
     post '/tests', {:id => 2, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
-    assert_equal 204, last_response.status
+    assert_equal 200, last_response.status
 
     put '/tests/2', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     assert_equal 400, last_response.status
@@ -141,7 +137,7 @@ class AppTest < Test::Unit::TestCase
     post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
 
     patch 'tests/1', {:name => "test-name"}.to_json, "CONTENT-TYPE" => "application/json"
-    assert_equal 204, last_response.status
+    assert_equal 200, last_response.status
 
     get '/tests/1'
     json = JSON.parse(last_response.body)
@@ -161,6 +157,13 @@ class AppTest < Test::Unit::TestCase
 
     delete '/tests/1'
     delete '/tests/2'
+  end
+
+  # Helpers
+  def assert_bad_request_already_exists (last_response)
+    assert_equal 400, last_response.status
+    json = JSON.parse(last_response.body)
+    assert_equal "id_already_exists", json['id']
   end
 
 end

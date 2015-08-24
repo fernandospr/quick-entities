@@ -1,4 +1,5 @@
 require 'bundler'
+require 'securerandom'
 Bundler.require
 
 if ENV['MONGOHQ_URL']
@@ -32,11 +33,15 @@ post '/:entities' do |entities|
   coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
 
+  if !json['id']
+    json['id'] = SecureRandom.uuid
+  end
   halt_if_id_is_missing(json)
   halt_if_exists(coll, json['id'])
   
   create_entity(coll, json)
-  halt 204 
+  
+  find_by_id_or_halt(coll, json['id']).to_json
 end
 
 put '/:entities/:id' do |entities,id|
@@ -52,7 +57,7 @@ put '/:entities/:id' do |entities,id|
   coll.remove({'id' => id})
   create_entity(coll, json)
   
-  halt 204 
+  find_by_id_or_halt(coll, id).to_json
 end
 
 patch '/:entities/:id' do |entities,id|
@@ -67,16 +72,14 @@ patch '/:entities/:id' do |entities,id|
 
   coll.update({'id' => id.to_s}, '$set' => json)
 
-  halt 204 
+  find_by_id_or_halt(coll, id).to_json
 end
 
 get '/:entities/:id' do |entities,id|
   content_type :json
 
   coll = DB.collection(entities)
-  entity = find_by_id_or_halt(coll, id)
-
-  entity.to_json
+  find_by_id_or_halt(coll, id).to_json
 end
 
 delete '/:entities/:id' do |entities,id|
