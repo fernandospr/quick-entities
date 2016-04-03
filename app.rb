@@ -22,7 +22,7 @@ get '/:entities' do |entities|
   content_type :json
 
   coll = DB.collection(entities)
-  coll.find( {}, { fields: {_id:0} } ).to_a.to_json
+  coll.find( get_filters(request), { fields: {_id:0} } ).to_a.to_json
 end
 
 post '/:entities' do |entities|
@@ -93,6 +93,22 @@ delete '/:entities/:id' do |entities,id|
   drop_collection_if_empty(coll)
 
   halt 204
+end
+
+def get_filters (request)
+  filters = Hash.new
+  request.GET.each do |k,v| 
+    if is_number?(v)
+      filters.store(k, v.to_f)
+    else 
+      filters.store(k, v)
+    end
+  end
+  filters
+end
+
+def is_number? (string)
+  true if Float(string) rescue false
 end
 
 def create_entity (coll, json)
