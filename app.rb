@@ -99,7 +99,10 @@ def get_filters (request)
   filters = Hash.new
   request.GET.each do |k,v| 
     if is_number?(v)
-      filters.store(k, v.to_f)
+      orlist = Array.new
+      orlist.push({k => v.to_f})
+      orlist.push({k => v})
+      filters.store("$or", orlist)
     else 
       filters.store(k, v)
     end

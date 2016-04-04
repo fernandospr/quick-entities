@@ -12,25 +12,25 @@ class AppTest < Test::Unit::TestCase
   end
 
   def test_00_create_entity
-  	post '/tests', {:id => "1", :test => "test", :value => 8}.to_json, "CONTENT-TYPE" => "application/json"
+  	post '/tests', {:id => "1", :test => "test", :value => 8, :example => "15"}.to_json, "CONTENT-TYPE" => "application/json"
   	
   	assert_equal 200, last_response.status
   end
 
   def test_01_create_already_existing_entity
-  	post '/tests', {:id => "1", :test => "test", :value => 8}.to_json, "CONTENT-TYPE" => "application/json"
+  	post '/tests', {:id => "1", :test => "test", :value => 8, :example => "15"}.to_json, "CONTENT-TYPE" => "application/json"
   	
   	assert_bad_request_already_exists(last_response)
   end
 
   def test_02_create_already_existing_entity_using_number_id
-    post '/tests', {:id => 1, :test => "test", :value => 8}.to_json, "CONTENT-TYPE" => "application/json"
+    post '/tests', {:id => 1, :test => "test", :value => 8, :example => "15"}.to_json, "CONTENT-TYPE" => "application/json"
     
     assert_bad_request_already_exists(last_response)
   end
 
   def test_03_create_entity_without_id
-  	post '/tests', {:test => "test", :value => 8}.to_json, "CONTENT_TYPE" => "application/json"
+  	post '/tests', {:test => "test", :value => 8, :example => "15"}.to_json, "CONTENT_TYPE" => "application/json"
   	
   	assert_equal 200, last_response.status
     json = JSON.parse(last_response.body)
@@ -87,7 +87,15 @@ class AppTest < Test::Unit::TestCase
     assert_equal 0, json_array.length
   end
 
-  def test_10_get_all_entities_contains_existing_entity
+  def test_10_filter_existing_entities_by_number_3
+    get '/tests?example=15'
+    
+    assert_equal 200, last_response.status
+    json_array = JSON.parse(last_response.body)
+    assert json_array.length > 0
+  end
+
+  def test_11_get_all_entities_contains_existing_entity
   	get '/tests'
   	
   	assert_equal 200, last_response.status
@@ -95,25 +103,25 @@ class AppTest < Test::Unit::TestCase
   	assert_equal "1", json_array[0]['id']
   end
 
-  def test_11_get_unexisting_entity
+  def test_12_get_unexisting_entity
   	get '/tests/123'
  
   	assert_equal 404, last_response.status
   end
 
-  def test_12_delete_existing_entity
+  def test_13_delete_existing_entity
   	delete '/tests/1'
   	
   	assert_equal 204, last_response.status
   end
 
-  def test_13_delete_unexisting_entity
+  def test_14_delete_unexisting_entity
   	delete '/tests/1'
   	
   	assert_equal 404, last_response.status
   end
 
-  def test_14_create_entity_using_number_id
+  def test_15_create_entity_using_number_id
     post '/tests', {:id => 2, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     assert_equal 200, last_response.status
 
@@ -126,7 +134,7 @@ class AppTest < Test::Unit::TestCase
     assert_equal 204, last_response.status
   end
 
-  def test_15_update_entity
+  def test_16_update_entity
     post '/tests', {:id => 3, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     assert_equal 200, last_response.status
     
@@ -143,7 +151,7 @@ class AppTest < Test::Unit::TestCase
     assert_equal 204, last_response.status
   end
 
-  def test_16_update_entity_with_id_of_existing_entity
+  def test_17_update_entity_with_id_of_existing_entity
     post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     assert_equal 200, last_response.status
     
@@ -160,12 +168,12 @@ class AppTest < Test::Unit::TestCase
     assert_equal 204, last_response.status
   end
 
-  def test_17_create_entity_with_invalid_entities_name
+  def test_18_create_entity_with_invalid_entities_name
     post '/system.test', {:id => 3, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     assert_equal 400, last_response.status
   end
 
-  def test_18_no_internal_collections
+  def test_19_no_internal_collections
     get '/'
  
     assert_equal 200, last_response.status
@@ -173,7 +181,7 @@ class AppTest < Test::Unit::TestCase
     assert !json.any? {|collection| collection.strip.start_with?("system.")}, "Should not return internal collections"
   end
 
-  def test_19_patch_entity
+  def test_20_patch_entity
     post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
 
     patch 'tests/1', {:name => "test-name"}.to_json, "CONTENT-TYPE" => "application/json"
@@ -188,7 +196,7 @@ class AppTest < Test::Unit::TestCase
     delete '/tests/1'
   end
 
-  def test_20_patch_entity_with_id_of_existing_entity
+  def test_21_patch_entity_with_id_of_existing_entity
     post '/tests', {:id => 1, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     post '/tests', {:id => 2, :test => "test"}.to_json, "CONTENT-TYPE" => "application/json"
     
