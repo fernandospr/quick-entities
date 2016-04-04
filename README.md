@@ -29,7 +29,8 @@ Execute a POST request to http://localhost:4567/fruits with the following JSON b
 ```
 {
 	"id":"1",
-	"name": "Apple"
+	"name": "Apple",
+	"color": "red"
 }
 ```
 
@@ -38,6 +39,10 @@ Note: if you do not provide the id, an id will be generated for you.
 ###Get the entities
 
 Execute a GET request to http://localhost:4567/fruits
+
+###Filter the entities by an attribute
+
+Execute a GET request to http://localhost:4567/fruits?color=red
 
 ###Get one specific entity
 
@@ -49,7 +54,8 @@ Execute a PUT request to http://localhost:4567/fruits/1 with the following JSON 
 ```
 {
 	"id":"1",
-	"name": "Orange"
+	"name": "Orange",
+	"color": "orange"
 }
 ```
 
