@@ -103,7 +103,12 @@ def get_filters (request)
       orlist.push({k => v.to_f})
       orlist.push({k => v})
       filters.store("$or", orlist)
-    else 
+    elsif is_boolean?(v)
+      orlist = Array.new
+      orlist.push({k => to_boolean(v)})
+      orlist.push({k => v})
+      filters.store("$or", orlist)
+    else
       filters.store(k, v)
     end
   end
@@ -112,6 +117,14 @@ end
 
 def is_number? (string)
   true if Float(string) rescue false
+end
+
+def is_boolean? (string)
+  "true".eql?(string) || "false".eql?(string)
+end
+
+def to_boolean (string)
+    string == 'true'
 end
 
 def create_entity (coll, json)
