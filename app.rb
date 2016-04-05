@@ -2,14 +2,6 @@ require 'bundler'
 require 'securerandom'
 Bundler.require
 
-if ENV['MONGOHQ_URL']
-  uri = URI.parse(ENV['MONGOHQ_URL'])
-  conn = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
-  DB = conn.db(uri.path.gsub(/^\//, ''))
-else
-  DB = Mongo::Connection.new.db("test")
-end
-
 get '/' do 
   content_type :json
 
@@ -95,89 +87,6 @@ delete '/:entities/:id' do |entities,id|
   halt 204
 end
 
-def get_filters (request)
-  filters = Hash.new
-  request.GET.each do |k,v| 
-    if is_number?(v)
-      orlist = Array.new
-      orlist.push({k => v.to_f})
-      orlist.push({k => v})
-      filters.store("$or", orlist)
-    elsif is_boolean?(v)
-      orlist = Array.new
-      orlist.push({k => to_boolean(v)})
-      orlist.push({k => v})
-      filters.store("$or", orlist)
-    else
-      filters.store(k, v)
-    end
-  end
-  filters
-end
-
-def is_number? (string)
-  true if Float(string) rescue false
-end
-
-def is_boolean? (string)
-  "true".eql?(string) || "false".eql?(string)
-end
-
-def to_boolean (string)
-    string == 'true'
-end
-
-def create_entity (coll, json)
-  json['id'] = json['id'].to_s
-  coll.save(json)
-end
-
-def halt_if_id_is_missing (json)
-  if !json['id']
-    halt 400, { :id => "id_required", :message => "The id is required" }.to_json
-  end
-end
-
-def halt_if_exists (coll, id)
-  if find_by_id(coll,id)
-    halt 400, { :id => "id_already_exists", :message => "An entity with id " + id.to_s + " already exists" }.to_json
-  end
-end
-
-def halt_if_trying_to_update_to_a_new_id_that_exists (coll, current_id, new_id)
-  if (new_id && current_id.to_s != new_id.to_s)
-    halt_if_exists(coll, new_id.to_s)
-  end
-end
-
-def find_by_id_or_halt (coll, id)
-  entity = find_by_id(coll, id)
-  if !entity
-    halt 404
-  end
-  entity
-end
-
-def find_by_id (coll, id)
-  coll.find( {'id' => id.to_s}, { fields: {_id:0} } ).to_a[0]
-end
-
-def drop_collection_if_empty (coll)
-  if (coll.count == 0)
-    coll.drop
-  end
-end
-
-def halt_if_invalid_entities_name (entities)
-  if is_db_collection_name(entities)
-    halt 400, { :id => "invalid_entities_name", :message => "Cannot create entities with the name " + entities }.to_json
-  end
-end
-
-def delete_db_collection_names (collection_names)
-  collection_names.delete_if{ |collection_name| is_db_collection_name(collection_name) }
-end
-
-def is_db_collection_name (collection_name)
-  collection_name.strip.start_with?("system.")
-end
+require_relative 'db'
+require_relative 'string_utils'
+require_relative 'routing_helper'
