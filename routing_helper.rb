@@ -45,7 +45,7 @@ def find_by_id_or_halt (coll, id)
 end
 
 def halt_if_invalid_entities_name (entities)
-  if is_db_collection_name(entities)
+  if is_db_collection_name(entities) || is_user_collection_name(entities)
     halt 400, { :id => "invalid_entities_name", :message => "Cannot create entities with the name " + entities }.to_json
   end
 end

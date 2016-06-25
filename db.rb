@@ -15,9 +15,13 @@ def get_user_collection_names (user)
 end
 
 def get_user_entities (user, entities, filters)
-  entities = get_user_collection_name(entities, user)
-  coll = DB.collection(entities)
+  coll = get_user_collection(user, entities)
   coll.find( filters, { fields: {_id:0} } ).to_a
+end
+
+def get_user_collection (user, entities)
+  entities = get_user_collection_name(entities, user)
+  DB.collection(entities)
 end
 
 def create_entity (coll, json)

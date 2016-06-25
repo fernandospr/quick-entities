@@ -24,13 +24,14 @@ post '/:entities' do |entities|
 
   halt_if_invalid_entities_name(entities)
 
-  coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
-
+  # TODO: Refactor id check
   if !json['id']
     json['id'] = SecureRandom.uuid
   end
   halt_if_id_is_missing(json)
+
+  coll = get_user_collection(header_token, entities)
   halt_if_exists(coll, json['id'])
   
   create_entity(coll, json)
