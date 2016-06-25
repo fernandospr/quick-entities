@@ -36,15 +36,16 @@ post '/:entities' do |entities|
   
   create_entity(coll, json)
   
-  find_by_id_or_halt(coll, json['id']).to_json
+  entities = find_by_id_or_halt(coll, json['id'])
+  entities.to_json
 end
 
 put '/:entities/:id' do |entities,id|
   content_type :json
   header_token = request.env["HTTP_X_API_KEY"]
 
-  coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
+  coll = get_user_collection(header_token, entities)
 
   find_by_id_or_halt(coll, id)
 
@@ -53,15 +54,16 @@ put '/:entities/:id' do |entities,id|
   coll.remove({'id' => id})
   create_entity(coll, json)
   
-  find_by_id_or_halt(coll, id).to_json
+  entity = find_by_id_or_halt(coll, id)
+  entity.to_json
 end
 
 patch '/:entities/:id' do |entities,id|
   content_type :json
   header_token = request.env["HTTP_X_API_KEY"]
 
-  coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
+  coll = get_user_collection(header_token, entities)
 
   find_by_id_or_halt(coll, id)
 
@@ -69,22 +71,24 @@ patch '/:entities/:id' do |entities,id|
 
   coll.update({'id' => id.to_s}, '$set' => json)
 
-  find_by_id_or_halt(coll, id).to_json
+  entity = find_by_id_or_halt(coll, id)
+  entity.to_json
 end
 
 get '/:entities/:id' do |entities,id|
   content_type :json
   header_token = request.env["HTTP_X_API_KEY"]
 
-  coll = DB.collection(entities)
-  find_by_id_or_halt(coll, id).to_json
+  coll = get_user_collection(header_token, entities)
+  entity = find_by_id_or_halt(coll, id)
+  entity.to_json
 end
 
 delete '/:entities/:id' do |entities,id|
   content_type :json
   header_token = request.env["HTTP_X_API_KEY"]
 
-  coll = DB.collection(entities)
+  coll = get_user_collection(header_token, entities)
   find_by_id_or_halt(coll, id)
 
 	coll.remove({'id' => id})
