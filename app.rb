@@ -4,14 +4,17 @@ Bundler.require
 
 get '/' do 
   content_type :json
+  header_token = request.env["HTTP_X_API_KEY"]
 
   collection_names = DB.collection_names.to_a
-  delete_db_collection_names(collection_names)
+  filter_db_collection_names(collection_names)
+  filter_non_user_collection_names(collection_names, header_token)
   collection_names.to_json
 end
 
 get '/:entities' do |entities|
   content_type :json
+  header_token = request.env["HTTP_X_API_KEY"]
 
   coll = DB.collection(entities)
   coll.find( get_filters(request), { fields: {_id:0} } ).to_a.to_json
@@ -19,6 +22,7 @@ end
 
 post '/:entities' do |entities|
   content_type :json
+  header_token = request.env["HTTP_X_API_KEY"]
 
   halt_if_invalid_entities_name(entities)
 
@@ -38,6 +42,7 @@ end
 
 put '/:entities/:id' do |entities,id|
   content_type :json
+  header_token = request.env["HTTP_X_API_KEY"]
 
   coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
@@ -54,6 +59,7 @@ end
 
 patch '/:entities/:id' do |entities,id|
   content_type :json
+  header_token = request.env["HTTP_X_API_KEY"]
 
   coll = DB.collection(entities)
   json = JSON.parse(request.body.read)
@@ -69,6 +75,7 @@ end
 
 get '/:entities/:id' do |entities,id|
   content_type :json
+  header_token = request.env["HTTP_X_API_KEY"]
 
   coll = DB.collection(entities)
   find_by_id_or_halt(coll, id).to_json
@@ -76,6 +83,7 @@ end
 
 delete '/:entities/:id' do |entities,id|
   content_type :json
+  header_token = request.env["HTTP_X_API_KEY"]
 
   coll = DB.collection(entities)
   find_by_id_or_halt(coll, id)

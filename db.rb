@@ -21,10 +21,20 @@ def drop_collection_if_empty (coll)
   end
 end
 
-def delete_db_collection_names (collection_names)
+def filter_db_collection_names (collection_names)
   collection_names.delete_if{ |collection_name| is_db_collection_name(collection_name) }
 end
 
 def is_db_collection_name (collection_name)
   collection_name.strip.start_with?("system.")
+end
+
+def filter_non_user_collection_names (collection_names, user)
+  if (!user.to_s.empty?)
+    collection_names.delete_if{ |collection_name| !is_user_collection_name_with_user(collection_name, user) }
+  end
+end
+
+def is_user_collection_name_with_user (collection_name, user)
+  collection_name.strip.start_with?("user." + user)
 end
