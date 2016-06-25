@@ -6,9 +6,7 @@ get '/' do
   content_type :json
   header_token = request.env["HTTP_X_API_KEY"]
 
-  collection_names = DB.collection_names.to_a
-  filter_db_collection_names(collection_names)
-  filter_non_user_collection_names(collection_names, header_token)
+  collection_names = get_user_collection_names(header_token)
   collection_names.to_json
 end
 

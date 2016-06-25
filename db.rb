@@ -6,6 +6,14 @@ else
   DB = Mongo::Connection.new.db("test")
 end
 
+def get_user_collection_names (user)
+  collection_names = DB.collection_names.to_a
+  filter_db_collection_names(collection_names)
+  filter_non_user_collection_names(collection_names, user)
+  rename_user_collection_names(collection_names, user)
+  collection_names
+end
+
 def create_entity (coll, json)
   json['id'] = json['id'].to_s
   coll.save(json)
@@ -32,14 +40,26 @@ end
 def filter_non_user_collection_names (collection_names, user)
   if (!user.to_s.empty?)
     collection_names.delete_if{ |collection_name| !is_user_collection_name_with_user(collection_name, user) }
+  else 
+    collection_names.delete_if{ |collection_name| is_user_collection_name(collection_name) }
   end
+end
+
+def rename_user_collection_names (collection_names, user)
+  if (!user.to_s.empty?)
+    collection_names.map! { |collection_name| collection_name.sub("user." + user + ".", "") }
+  end
+end
+
+def is_user_collection_name (collection_name)
+  collection_name.strip.start_with?("user.")
 end
 
 def is_user_collection_name_with_user (collection_name, user)
   collection_name.strip.start_with?("user." + user)
 end
 
-def get_user_collection_name(collection_name, user)
+def get_user_collection_name (collection_name, user)
   if (!user.to_s.empty?)
     "user." + user + "." + collection_name
   else
