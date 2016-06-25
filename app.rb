@@ -16,6 +16,7 @@ get '/:entities' do |entities|
   content_type :json
   header_token = request.env["HTTP_X_API_KEY"]
 
+  entities = get_user_collection_name(entities, header_token)
   coll = DB.collection(entities)
   coll.find( get_filters(request), { fields: {_id:0} } ).to_a.to_json
 end

@@ -38,3 +38,11 @@ end
 def is_user_collection_name_with_user (collection_name, user)
   collection_name.strip.start_with?("user." + user)
 end
+
+def get_user_collection_name(collection_name, user)
+  if (!user.to_s.empty?)
+    "user." + user + "." + collection_name
+  else
+    collection_name
+  end
+end
