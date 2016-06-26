@@ -52,6 +52,9 @@ put '/:entities/:id' do |entities,id|
 
   put_by_id(coll, id, json)
   
+  if (json['id'])
+    id = json['id']
+  end
   user_entity = find_by_id_or_halt(coll, id)
   user_entity.to_json
 end
@@ -71,6 +74,9 @@ patch '/:entities/:id' do |entities,id|
 
   patch_by_id(coll, id, json)
 
+  if (json['id'])
+    id = json['id']
+  end
   user_entity = find_by_id_or_halt(coll, id)
   user_entity.to_json
 end
