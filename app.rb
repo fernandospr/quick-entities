@@ -14,8 +14,8 @@ get '/:entities' do |entities|
   content_type :json
   header_token = request.env["HTTP_X_API_KEY"]
 
-  entities = get_user_entities(header_token, entities, get_filters(request))
-  entities.to_json
+  user_entities = get_user_entities(header_token, entities, get_filters(request))
+  user_entities.to_json
 end
 
 post '/:entities' do |entities|
@@ -25,19 +25,16 @@ post '/:entities' do |entities|
   halt_if_invalid_entities_name(entities)
 
   json = JSON.parse(request.body.read)
-  # TODO: Refactor id check
-  if !json['id']
-    json['id'] = SecureRandom.uuid
-  end
-  halt_if_id_is_missing(json)
+  sanitize_id_or_generate_if_missing(json)
 
   coll = get_user_collection(header_token, entities)
+
   halt_if_exists(coll, json['id'])
   
   create_entity(coll, json)
   
-  entities = find_by_id_or_halt(coll, json['id'])
-  entities.to_json
+  user_entities = find_by_id_or_halt(coll, json['id'])
+  user_entities.to_json
 end
 
 put '/:entities/:id' do |entities,id|
@@ -45,17 +42,18 @@ put '/:entities/:id' do |entities,id|
   header_token = request.env["HTTP_X_API_KEY"]
 
   json = JSON.parse(request.body.read)
+  sanitize_id(json)
+
   coll = get_user_collection(header_token, entities)
 
   find_by_id_or_halt(coll, id)
 
   halt_if_trying_to_update_to_a_new_id_that_exists(coll, id, json['id'])
 
-  coll.remove({'id' => id})
-  create_entity(coll, json)
+  put_by_id(coll, id, json)
   
-  entity = find_by_id_or_halt(coll, id)
-  entity.to_json
+  user_entity = find_by_id_or_halt(coll, id)
+  user_entity.to_json
 end
 
 patch '/:entities/:id' do |entities,id|
@@ -63,16 +61,18 @@ patch '/:entities/:id' do |entities,id|
   header_token = request.env["HTTP_X_API_KEY"]
 
   json = JSON.parse(request.body.read)
+  sanitize_id(json)
+
   coll = get_user_collection(header_token, entities)
 
   find_by_id_or_halt(coll, id)
 
   halt_if_trying_to_update_to_a_new_id_that_exists(coll, id, json['id'])
 
-  coll.update({'id' => id.to_s}, '$set' => json)
+  patch_by_id(coll, id, json)
 
-  entity = find_by_id_or_halt(coll, id)
-  entity.to_json
+  user_entity = find_by_id_or_halt(coll, id)
+  user_entity.to_json
 end
 
 get '/:entities/:id' do |entities,id|
@@ -80,8 +80,9 @@ get '/:entities/:id' do |entities,id|
   header_token = request.env["HTTP_X_API_KEY"]
 
   coll = get_user_collection(header_token, entities)
-  entity = find_by_id_or_halt(coll, id)
-  entity.to_json
+
+  user_entity = find_by_id_or_halt(coll, id)
+  user_entity.to_json
 end
 
 delete '/:entities/:id' do |entities,id|
@@ -89,11 +90,10 @@ delete '/:entities/:id' do |entities,id|
   header_token = request.env["HTTP_X_API_KEY"]
 
   coll = get_user_collection(header_token, entities)
+
   find_by_id_or_halt(coll, id)
 
-	coll.remove({'id' => id})
-
-  drop_collection_if_empty(coll)
+	delete_by_id(coll, id)
 
   halt 204
 end

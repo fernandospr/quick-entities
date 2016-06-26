@@ -9,24 +9,24 @@ end
 def get_user_collection_names (user)
   collection_names = DB.collection_names.to_a
   filter_db_collection_names(collection_names)
-  filter_non_user_collection_names(collection_names, user)
-  rename_user_collection_names(collection_names, user)
+  filter_non_user_collection_names(user, collection_names)
+  rename_user_collection_names(user, collection_names)
   collection_names
 end
 
-def get_user_entities (user, entities, filters)
-  coll = get_user_collection(user, entities)
+def get_user_entities (user, collection_name, filters)
+  coll = get_user_collection(user, collection_name)
   coll.find( filters, { fields: {_id:0} } ).to_a
 end
 
-def get_user_collection (user, entities)
-  entities = get_user_collection_name(entities, user)
-  DB.collection(entities)
+def get_user_collection (user, collection_name)
+  collection_name = get_user_collection_name(user, collection_name)
+  DB.collection(collection_name)
 end
 
-def create_entity (coll, json)
-  json['id'] = json['id'].to_s
-  coll.save(json)
+def create_entity (coll, entity)
+  entity['id'] = entity['id'].to_s
+  coll.save(entity)
 end
 
 def find_by_id (coll, id)
@@ -47,15 +47,15 @@ def is_db_collection_name (collection_name)
   collection_name.strip.start_with?("system.")
 end
 
-def filter_non_user_collection_names (collection_names, user)
+def filter_non_user_collection_names (user, collection_names)
   if (!user.to_s.empty?)
-    collection_names.delete_if{ |collection_name| !is_user_collection_name_with_user(collection_name, user) }
+    collection_names.delete_if{ |collection_name| !is_user_collection_name_with_user(user, collection_name) }
   else 
     collection_names.delete_if{ |collection_name| is_user_collection_name(collection_name) }
   end
 end
 
-def rename_user_collection_names (collection_names, user)
+def rename_user_collection_names (user, collection_name)
   if (!user.to_s.empty?)
     collection_names.map! { |collection_name| collection_name.sub("user." + user + ".", "") }
   end
@@ -65,14 +65,28 @@ def is_user_collection_name (collection_name)
   collection_name.strip.start_with?("user.")
 end
 
-def is_user_collection_name_with_user (collection_name, user)
+def is_user_collection_name_with_user (user, collection_name)
   collection_name.strip.start_with?("user." + user)
 end
 
-def get_user_collection_name (collection_name, user)
+def get_user_collection_name (user, collection_name)
   if (!user.to_s.empty?)
     "user." + user + "." + collection_name
   else
     collection_name
   end
+end
+
+def put_by_id (coll, id, entity)
+  coll.remove({'id' => id})
+  create_entity(coll, entity)
+end
+
+def patch_by_id (coll, id, entity)
+  coll.update({'id' => id.to_s}, '$set' => entity)
+end
+
+def delete_by_id (coll, id)
+  coll.remove({'id' => id})
+  drop_collection_if_empty(coll)
 end

@@ -18,9 +18,19 @@ def get_filters (request)
   filters
 end
 
-def halt_if_id_is_missing (json)
-  if !json['id']
-    halt 400, { :id => "id_required", :message => "The id is required" }.to_json
+def sanitize_id_or_generate_if_missing (json)
+  id = json['id']
+  if (!id || id.to_s.strip.empty?)
+    json['id'] = SecureRandom.uuid
+  else 
+    json['id'] = id.to_s.strip
+  end
+end
+
+def sanitize_id (json)
+  id = json['id']
+  if (id)
+    json['id'] = id.to_s.strip
   end
 end
 
