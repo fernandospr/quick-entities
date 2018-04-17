@@ -1,5 +1,3 @@
-<a href='https://pledgie.com/campaigns/26743'><img alt='Click here to lend your support to: Fernando&#x27;s Open Source Projects and make a donation at pledgie.com !' src='https://pledgie.com/campaigns/26743.png?skin_name=chrome' border='0' ></a>
-
 quick-entities
 ==============
 
@@ -23,7 +21,7 @@ $ ruby app.rb (or ruby app.rb -o 0.0.0.0 if you need to allow access from the ne
 
 ## Usage
 
-###Post an entity
+### Post an entity
 
 Execute a POST request to http://localhost:4567/fruits with the following JSON body:
 ```
@@ -36,19 +34,19 @@ Execute a POST request to http://localhost:4567/fruits with the following JSON b
 
 Note: if you do not provide the id, an id will be generated for you.
 
-###Get the entities
+### Get the entities
 
 Execute a GET request to http://localhost:4567/fruits
 
-###Filter the entities by an attribute
+### Filter the entities by an attribute
 
 Execute a GET request to http://localhost:4567/fruits?color=red
 
-###Get one specific entity
+### Get one specific entity
 
 Execute a GET request to http://localhost:4567/fruits/1
 
-###Update an entity
+### Update an entity
 
 Execute a PUT request to http://localhost:4567/fruits/1 with the following JSON body:
 ```
@@ -59,7 +57,7 @@ Execute a PUT request to http://localhost:4567/fruits/1 with the following JSON 
 }
 ```
 
-###Patch an entity
+### Patch an entity
 
 Execute a PATCH request to http://localhost:4567/fruits/1 with the following JSON body:
 ```
@@ -68,10 +66,10 @@ Execute a PATCH request to http://localhost:4567/fruits/1 with the following JSO
 }
 ```
 
-###Delete the entity
+### Delete the entity
 
 Execute a DELETE request to http://localhost:4567/fruits/1
 
-###Get all the collections
+### Get all the collections
 
 Execute a GET request to http://localhost:4567
