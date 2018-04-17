@@ -1,18 +1,14 @@
-if ENV['MONGOHQ_URL']
-  uri = URI.parse(ENV['MONGOHQ_URL'])
-  conn = Mongo::Connection.from_uri(ENV['MONGOHQ_URL'])
-  DB = conn.db(uri.path.gsub(/^\//, ''))
-else
-  DB = Mongo::Connection.new.db("test")
-end
+uristring = ENV['QUICK_ENTITIES_MONGODB_URI'] || 'mongodb://localhost:27017/test'
+client = Mongo::Client.new(uristring)
+DB = client.database
 
 def create_entity (coll, json)
   json['id'] = json['id'].to_s
-  coll.save(json)
+  coll.insert_one(json)
 end
 
 def find_by_id (coll, id)
-  coll.find( {'id' => id.to_s}, { fields: {_id:0} } ).to_a[0]
+  coll.find( {'id' => id.to_s}, { 'projection' => { '_id': 0 } } ).to_a[0]
 end
 
 def drop_collection_if_empty (coll)

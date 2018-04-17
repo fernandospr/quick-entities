@@ -14,7 +14,7 @@ get '/:entities' do |entities|
   content_type :json
 
   coll = DB.collection(entities)
-  coll.find( get_filters(request), { fields: {_id:0} } ).to_a.to_json
+  coll.find( get_filters(request), { 'projection' => { '_id': 0 } } ).to_a.to_json
 end
 
 post '/:entities' do |entities|
@@ -46,7 +46,7 @@ put '/:entities/:id' do |entities,id|
 
   halt_if_trying_to_update_to_a_new_id_that_exists(coll, id, json['id'])
 
-  coll.remove({'id' => id})
+  coll.find({'id' => id}).delete_one
   create_entity(coll, json)
   
   find_by_id_or_halt(coll, id).to_json
@@ -62,7 +62,7 @@ patch '/:entities/:id' do |entities,id|
 
   halt_if_trying_to_update_to_a_new_id_that_exists(coll, id, json['id'])
 
-  coll.update({'id' => id.to_s}, '$set' => json)
+  coll.update_one({'id' => id.to_s}, '$set' => json)
 
   find_by_id_or_halt(coll, id).to_json
 end
@@ -80,7 +80,7 @@ delete '/:entities/:id' do |entities,id|
   coll = DB.collection(entities)
   find_by_id_or_halt(coll, id)
 
-	coll.remove({'id' => id})
+	coll.find({'id' => id}).delete_one
 
   drop_collection_if_empty(coll)
 
